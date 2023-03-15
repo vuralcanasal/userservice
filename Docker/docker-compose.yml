@@ -1,0 +1,35 @@
+# Use root/password as user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: userservice-db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: userservice_db
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - ./my-db:/var/lib/mysql
+
+  adminer:
+    image: adminer:4
+    restart: always
+    ports:
+      - "9090:8080"
+
+  userservice:
+    image: userservice:0.0.4
+    container_name: userservice
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: userservice-db
+      DB_USERNAME: root
+      DB_PASSWORD: password
